@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -40,6 +41,13 @@ public class UrlShortenerService {
         Optional<ShortenedUrl> shortenedUrl = repository.findByShortUrl(shortUrl);
         return shortenedUrl.map(ShortenedUrl::getOriginalUrl).orElse(null);
     }
+
+    public List<ShortenedUrl> getAllRepos(){
+        return repository.findAll();
+    }
+
+
+
 
     private String generateShortUrl() {
         byte[] array = new byte[7];

@@ -1,10 +1,13 @@
 package ru.anyline.urlcut.controller;
 
+import ru.anyline.urlcut.model.ShortenedUrl;
 import ru.anyline.urlcut.service.UrlShortenerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -28,6 +31,11 @@ public class UrlShortenerController {
                     .build();
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @GetMapping("/repo")
+    public List<ShortenedUrl> getAllRepos(){
+        return urlShortenerService.getAllRepos();
     }
 }
 

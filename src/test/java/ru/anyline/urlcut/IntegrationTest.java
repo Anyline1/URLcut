@@ -50,7 +50,7 @@ public class IntegrationTest {
         shortenedUrl.setShortUrl("abc123");
         urlRepository.save(shortenedUrl);
 
-        mockMvc.perform(get("/abc123"))
+        mockMvc.perform(get("/api/abc123"))
                 .andExpect(status().isFound())
                 .andExpect(MockMvcResultMatchers.header().string("Location", originalUrl));
     }
