@@ -6,8 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-
 @RestController
 @RequestMapping("/api")
 public class UrlShortenerController {
@@ -26,7 +24,7 @@ public class UrlShortenerController {
         String originalUrl = urlShortenerService.getOriginalUrl(shortUrl);
         if (originalUrl != null) {
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create(originalUrl))
+                    .header("Location", originalUrl)
                     .build();
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
