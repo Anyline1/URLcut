@@ -16,7 +16,7 @@ public class UrlShortenerService {
     @Autowired
     private ShortenedUrlRepository repository;
 
-    private static final String BASE_URL = "http://localhost:8080/";
+    private static final String BASE_URL = "http://localhost:8080/api/";
 
     public String shortenUrl(String originalUrl) {
         Optional<ShortenedUrl> existing = repository.findByOriginalUrl(originalUrl);

@@ -29,7 +29,7 @@ public class IntegrationTest {
 
     @Test
     public void testShortenUrl_Integration() throws Exception {
-        String originalUrl = "https://www.google.com";
+        String originalUrl = "https://www.anydesc.com";
 
         mockMvc.perform(post("/api/shorten")
                         .param("url", originalUrl)
@@ -40,6 +40,17 @@ public class IntegrationTest {
         ShortenedUrl shortenedUrl = urlRepository.findByOriginalUrl(originalUrl).orElse(null);
         assert shortenedUrl != null;
         assertEquals(originalUrl, shortenedUrl.getOriginalUrl());
+
+    }
+
+    @Test
+    public void testShortenUrl_InvalidUrl() throws Exception {
+        String invalidUrl = "invalid_url";
+
+        mockMvc.perform(post("/api/shorten")
+                        .param("url", invalidUrl)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

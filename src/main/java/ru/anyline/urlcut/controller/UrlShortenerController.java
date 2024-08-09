@@ -1,5 +1,8 @@
 package ru.anyline.urlcut.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.URL;
 import ru.anyline.urlcut.model.ShortenedUrl;
 import ru.anyline.urlcut.service.UrlShortenerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +20,7 @@ public class UrlShortenerController {
     private UrlShortenerService urlShortenerService;
 
     @PostMapping("/shorten")
-    public ResponseEntity<String> shortenUrl(@RequestParam String url) {
+    public ResponseEntity<String> shortenUrl(@RequestParam @Valid @NotBlank @URL(message = "Invalid URL format")String url) {
         String shortUrl = urlShortenerService.shortenUrl(url);
         return new ResponseEntity<>(shortUrl, HttpStatus.CREATED);
     }
