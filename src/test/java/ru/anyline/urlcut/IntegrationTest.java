@@ -10,8 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -28,19 +26,34 @@ public class IntegrationTest {
     private ShortenedUrlRepository urlRepository;
 
     @Test
-    public void testShortenUrl_Integration() throws Exception {
-        String originalUrl = "https://www.anydesc.com";
+    public void testShortenUrl_WithCustomShortUrl() throws Exception {
+        String originalUrl = "https://www.google.com";
+        String customShortUrl = "custom123";
 
         mockMvc.perform(post("/api/shorten")
                         .param("url", originalUrl)
+                        .param("customUrl", customShortUrl)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(content().string(containsString("http://localhost:8080/")));
+                .andExpect(content().string("local/api/" + customShortUrl));
+    }
 
-        ShortenedUrl shortenedUrl = urlRepository.findByOriginalUrl(originalUrl).orElse(null);
-        assert shortenedUrl != null;
-        assertEquals(originalUrl, shortenedUrl.getOriginalUrl());
+    @Test
+    public void testShortenUrl_CustomShortUrlAlreadyExists() throws Exception {
+        String originalUrl = "https://www.google.com";
+        String customShortUrl = "custom123";
 
+        ShortenedUrl shortenedUrl = new ShortenedUrl();
+        shortenedUrl.setOriginalUrl(originalUrl);
+        shortenedUrl.setShortUrl(customShortUrl);
+        urlRepository.save(shortenedUrl);
+
+        mockMvc.perform(post("/api/shorten")
+                        .param("url", originalUrl)
+                        .param("customUrl", customShortUrl)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Custom short URL is already in use."));
     }
 
     @Test

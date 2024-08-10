@@ -5,7 +5,6 @@ import ru.anyline.urlcut.repository.ShortenedUrlRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -14,27 +13,46 @@ import java.util.Random;
 public class UrlShortenerService {
 
     @Autowired
-    private ShortenedUrlRepository repository;
+    private final ShortenedUrlRepository repository;
 
-    private static final String BASE_URL = "http://localhost:8080/api/";
+    private static final String BASE_URL = "local/api/";
 
-    public String shortenUrl(String originalUrl) {
-        Optional<ShortenedUrl> existing = repository.findByOriginalUrl(originalUrl);
-        if (existing.isPresent()) {
-            return BASE_URL + existing.get().getShortUrl();
+    public UrlShortenerService(ShortenedUrlRepository repository) {
+        this.repository = repository;
+    }
+
+    public String shortenUrl(String originalUrl, String customShortUrl) {
+
+        Optional<ShortenedUrl> existingUrl = repository.findByOriginalUrl(originalUrl);
+        if (existingUrl.isPresent()) {
+            return "Short URL already exists = " + BASE_URL + existingUrl.get().getShortUrl();
         }
 
-        String shortUrl = generateShortUrl();
-        while (repository.findByShortUrl(shortUrl).isPresent()) {
-            shortUrl = generateShortUrl();
+        if (customShortUrl != null && !customShortUrl.isEmpty()) {
+
+            Optional<ShortenedUrl> existingCustomUrl = repository.findByShortUrl(customShortUrl);
+            if (existingCustomUrl.isPresent()) {
+                throw new IllegalArgumentException("Custom short URL is already in use.");
+            }
+
+            ShortenedUrl shortenedUrl = new ShortenedUrl();
+            shortenedUrl.setOriginalUrl(originalUrl);
+            shortenedUrl.setShortUrl(customShortUrl);
+            repository.save(shortenedUrl);
+            return BASE_URL + customShortUrl;
+        } else {
+
+            String generatedShortUrl = generateShortUrl();
+            while (repository.findByShortUrl(generatedShortUrl).isPresent()) {
+                generatedShortUrl = generateShortUrl();
+            }
+
+            ShortenedUrl shortenedUrl = new ShortenedUrl();
+            shortenedUrl.setOriginalUrl(originalUrl);
+            shortenedUrl.setShortUrl(generatedShortUrl);
+            repository.save(shortenedUrl);
+            return BASE_URL + generatedShortUrl;
         }
-
-        ShortenedUrl shortenedUrl = new ShortenedUrl();
-        shortenedUrl.setOriginalUrl(originalUrl);
-        shortenedUrl.setShortUrl(shortUrl);
-        repository.save(shortenedUrl);
-
-        return BASE_URL + shortUrl;
     }
 
     public String getOriginalUrl(String shortUrl) {
@@ -46,13 +64,14 @@ public class UrlShortenerService {
         return repository.findAll();
     }
 
-
-
-
     private String generateShortUrl() {
-        byte[] array = new byte[7];
-        new Random().nextBytes(array);
-        return new String(array, StandardCharsets.UTF_8).replaceAll("[^a-zA-Z0-9]", "");
+        String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder shortUrl = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 6; i++) {
+            shortUrl.append(characters.charAt(random.nextInt(characters.length())));
+        }
+        return shortUrl.toString();
     }
 }
 

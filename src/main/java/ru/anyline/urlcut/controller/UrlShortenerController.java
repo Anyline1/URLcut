@@ -20,9 +20,11 @@ public class UrlShortenerController {
     private UrlShortenerService urlShortenerService;
 
     @PostMapping("/shorten")
-    public ResponseEntity<String> shortenUrl(@RequestParam @Valid @NotBlank @URL(message = "Invalid URL format")String url) {
-        String shortUrl = urlShortenerService.shortenUrl(url);
-        return new ResponseEntity<>(shortUrl, HttpStatus.CREATED);
+    public ResponseEntity<String> shortenUrl(
+            @RequestParam @Valid @NotBlank @URL(message = "Invalid URL format") String url,
+            @RequestParam(value = "customUrl", required = false) String customUrl) {
+        String shortUrl = urlShortenerService.shortenUrl(url, customUrl);
+        return ResponseEntity.status(HttpStatus.CREATED).body(shortUrl);
     }
 
     @GetMapping("/{shortUrl}")

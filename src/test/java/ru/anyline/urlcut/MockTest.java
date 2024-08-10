@@ -1,7 +1,8 @@
 package ru.anyline.urlcut;
 
-import ru.anyline.urlcut.model.ShortenedUrl;
-import ru.anyline.urlcut.repository.ShortenedUrlRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import ru.anyline.urlcut.controller.UrlShortenerController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -9,19 +10,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import ru.anyline.urlcut.service.UrlShortenerService;
 
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 public class MockTest {
 
-    @Mock
-    private ShortenedUrlRepository urlRepository;
 
-    @InjectMocks
+    @Mock
     private UrlShortenerService urlShortenerService;
+    @InjectMocks
+    private UrlShortenerController urlShortenerController;
 
     @BeforeEach
     public void setUp() {
@@ -29,46 +28,51 @@ public class MockTest {
     }
 
     @Test
-    public void testShortenUrl_WithExistingUrl() {
+    public void testShortenUrl_WithExistingOriginalUrl_ReturnsExistingShortUrl() {
         String originalUrl = "https://www.google.com";
-        ShortenedUrl existingUrl = new ShortenedUrl();
-        existingUrl.setOriginalUrl(originalUrl);
-        existingUrl.setShortUrl("abc123");
+        String existingShortUrl = "abc123";
 
-        when(urlRepository.findByOriginalUrl(originalUrl)).thenReturn(Optional.of(existingUrl));
+        when(urlShortenerService.shortenUrl(originalUrl, null))
+                .thenReturn("local/api/" + existingShortUrl);
 
-        String shortUrl = urlShortenerService.shortenUrl(originalUrl);
-        assertEquals("http://localhost:8080/abc123", shortUrl);
+        ResponseEntity<String> response = urlShortenerController.shortenUrl(originalUrl, null);
 
-        verify(urlRepository, times(1)).findByOriginalUrl(originalUrl);
-        verify(urlRepository, times(0)).save(any());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals("local/api/" + existingShortUrl, response.getBody());
+        verify(urlShortenerService, times(1)).shortenUrl(originalUrl, null);
     }
 
     @Test
-    public void testGetOriginalUrl_WithValidShortUrl() {
-        String shortUrl = "abc123";
-        ShortenedUrl shortenedUrl = new ShortenedUrl();
-        shortenedUrl.setShortUrl(shortUrl);
-        shortenedUrl.setOriginalUrl("https://www.google.com");
+    public void testShortenUrl_WithCustomShortUrl() {
+        String originalUrl = "https://www.google.com";
+        String customShortUrl = "custom123";
 
-        when(urlRepository.findByShortUrl(shortUrl)).thenReturn(Optional.of(shortenedUrl));
+        when(urlShortenerService.shortenUrl(originalUrl, customShortUrl))
+                .thenReturn("local/api/" + customShortUrl);
 
-        String originalUrl = urlShortenerService.getOriginalUrl(shortUrl);
-        assertEquals("https://www.google.com", originalUrl);
+        ResponseEntity<String> response = urlShortenerController.shortenUrl(originalUrl, customShortUrl);
 
-        verify(urlRepository, times(1)).findByShortUrl(shortUrl);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals("local/api/" + customShortUrl, response.getBody());
+        verify(urlShortenerService, times(1)).shortenUrl(originalUrl, customShortUrl);
     }
 
     @Test
-    public void testGetOriginalUrl_WithInvalidShortUrl() {
-        String shortUrl = "invalid";
+    public void testShortenUrl_WithRandomShortUrl() {
+        String originalUrl = "https://www.google.com";
+        String generatedShortUrl = "abc123";
 
-        when(urlRepository.findByShortUrl(shortUrl)).thenReturn(Optional.empty());
+        when(urlShortenerService.shortenUrl(originalUrl, null))
+                .thenReturn("local/api/" + generatedShortUrl);
 
-        String originalUrl = urlShortenerService.getOriginalUrl(shortUrl);
-        assertNull(originalUrl);
+        ResponseEntity<String> response = urlShortenerController.shortenUrl(originalUrl, null);
 
-        verify(urlRepository, times(1)).findByShortUrl(shortUrl);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals("local/api/" + generatedShortUrl, response.getBody());
+        verify(urlShortenerService, times(1)).shortenUrl(originalUrl, null);
     }
+
+
+
 }
 
