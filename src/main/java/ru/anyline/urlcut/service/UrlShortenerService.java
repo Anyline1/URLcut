@@ -55,6 +55,28 @@ public class UrlShortenerService {
         }
     }
 
+    public String updateShortUrl(String originalUrl, String newShortUrl) {
+        Optional<ShortenedUrl> existingUrl = repository.findByOriginalUrl(originalUrl);
+
+        if (existingUrl.isEmpty()) {
+            throw new IllegalArgumentException("Original URL does not exist.");
+        }
+
+        if (newShortUrl != null && !newShortUrl.isEmpty()) {
+            Optional<ShortenedUrl> existingShortUrl = repository.findByShortUrl(newShortUrl);
+            if (existingShortUrl.isPresent()) {
+                throw new IllegalArgumentException("New short URL is already in use.");
+            }
+
+            ShortenedUrl shortenedUrl = existingUrl.get();
+            shortenedUrl.setShortUrl(newShortUrl);
+            repository.save(shortenedUrl);
+            return BASE_URL + newShortUrl;
+        } else {
+            throw new IllegalArgumentException("New short URL cannot be null or empty.");
+        }
+    }
+
     public String getOriginalUrl(String shortUrl) {
         Optional<ShortenedUrl> shortenedUrl = repository.findByShortUrl(shortUrl);
         return shortenedUrl.map(ShortenedUrl::getOriginalUrl).orElse(null);

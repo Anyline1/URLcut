@@ -38,6 +38,17 @@ public class UrlShortenerController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<String> updateShortUrl(@RequestParam String originalUrl,
+                                                 @RequestParam String newShortUrl) {
+        try {
+            String updatedShortUrl = urlShortenerService.updateShortUrl(originalUrl, newShortUrl);
+            return new ResponseEntity<>(updatedShortUrl, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/repo")
     public List<ShortenedUrl> getAllRepos(){
         return urlShortenerService.getAllRepos();
