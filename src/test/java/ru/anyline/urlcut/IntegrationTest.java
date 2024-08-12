@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class IntegrationTest {
 
+    private static final String BASE_URL = "local/api/";
     @Autowired
     private MockMvc mockMvc;
 
@@ -38,23 +39,22 @@ public class IntegrationTest {
                 .andExpect(content().string("local/api/" + customShortUrl));
     }
 
-//    @Test
-//    public void testShortenUrl_CustomShortUrlAlreadyExists() throws Exception {
-//        String originalUrl = "https://www.google.com";
-//        String customShortUrl = "custom123";
-//
-//        ShortenedUrl shortenedUrl = new ShortenedUrl();
-//        shortenedUrl.setOriginalUrl(originalUrl);
-//        shortenedUrl.setShortUrl(customShortUrl);
-//        urlRepository.save(shortenedUrl);
-//
-//        mockMvc.perform(post("/api/shorten")
-//                        .param("url", originalUrl)
-//                        .param("customUrl", customShortUrl)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(content().string("Custom short URL is already in use."));
-//    }
+    @Test
+    public void testShortenUrl_CustomShortUrlAlreadyExists() throws Exception {
+        String originalUrl = "https://www.google.com";
+        String customShortUrl = "custom123";
+
+        ShortenedUrl shortenedUrl = new ShortenedUrl();
+        shortenedUrl.setOriginalUrl(originalUrl);
+        shortenedUrl.setShortUrl(customShortUrl);
+        urlRepository.save(shortenedUrl);
+
+        mockMvc.perform(post("/api/shorten")
+                        .param("url", originalUrl)
+                        .param("customUrl", customShortUrl)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("Short URL already exists = "+ BASE_URL + customShortUrl));
+    }
 
     @Test
     public void testShortenUrl_InvalidUrl() throws Exception {
