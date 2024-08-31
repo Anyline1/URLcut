@@ -12,11 +12,11 @@ import java.util.Random;
 @Service
 public class UrlShortenerService {
 
-    @Autowired
     private final ShortenedUrlRepository repository;
 
     private static final String BASE_URL = "local/api/";
 
+    @Autowired
     public UrlShortenerService(ShortenedUrlRepository repository) {
         this.repository = repository;
     }

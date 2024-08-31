@@ -13,7 +13,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("URL cut API")
-                        .version("6.9")
+                        .version("31.08")
                         .description("API для кастомной URL"));
     }
 }
