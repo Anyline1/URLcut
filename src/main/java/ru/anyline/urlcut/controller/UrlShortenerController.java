@@ -22,8 +22,13 @@ import java.util.List;
 )
 public class UrlShortenerController {
 
+    private final UrlShortenerService urlShortenerService;
+
     @Autowired
-    private UrlShortenerService urlShortenerService;
+    public UrlShortenerController(UrlShortenerService urlShortenerService){
+
+        this.urlShortenerService = urlShortenerService;
+    }
 
     @PostMapping("/shorten")
     @Operation(

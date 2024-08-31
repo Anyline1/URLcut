@@ -1,5 +1,6 @@
 package ru.anyline.urlcut.service;
 
+import org.springframework.cache.annotation.Cacheable;
 import ru.anyline.urlcut.model.ShortenedUrl;
 import ru.anyline.urlcut.repository.ShortenedUrlRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +13,16 @@ import java.util.Random;
 @Service
 public class UrlShortenerService {
 
-    @Autowired
     private final ShortenedUrlRepository repository;
 
     private static final String BASE_URL = "local/api/";
 
+    @Autowired
     public UrlShortenerService(ShortenedUrlRepository repository) {
         this.repository = repository;
     }
 
+    @Cacheable(key = "#originalUrl", value = "shortenUrl")
     public String shortenUrl(String originalUrl, String customShortUrl) {
 
         Optional<ShortenedUrl> existingUrl = repository.findByOriginalUrl(originalUrl);
