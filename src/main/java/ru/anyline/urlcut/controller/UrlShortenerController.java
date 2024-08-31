@@ -33,13 +33,25 @@ public class UrlShortenerController {
     @PostMapping("/shorten")
     @Operation(
             summary = "Создание короткого URL",
-            description = "Создает короткий URL для указанного оригинального URL. Пользователь может указать собственный короткий URL."
+            description = "Создает короткий URL для указанного оригинального URL."
     )
     public ResponseEntity<String> shortenUrl(
-            @RequestParam @Valid @NotBlank @URL(message = "Invalid URL format") String url,
-            @RequestParam(value = "customUrl", required = false) String customUrl
+            @RequestParam @Valid @NotBlank @URL(message = "Invalid URL format") String url
     ) {
-        String shortUrl = urlShortenerService.shortenUrl(url, customUrl);
+        String shortUrl = urlShortenerService.shortenUrl(url);
+        return ResponseEntity.status(HttpStatus.CREATED).body(shortUrl);
+    }
+
+    @PostMapping("/custom")
+    @Operation(
+            summary = "Создание своего короткого URL",
+            description = "Создает короткий URL для указанного оригинального URL. Пользователь может указать собственный короткий URL."
+    )
+    public ResponseEntity<String> customUrl(
+            @RequestParam @Valid @NotBlank @URL(message = "Invalid URL format") String url,
+            @RequestParam(value = "customUrl") String customUrl
+    ) {
+        String shortUrl = urlShortenerService.customUrl(url, customUrl);
         return ResponseEntity.status(HttpStatus.CREATED).body(shortUrl);
     }
 

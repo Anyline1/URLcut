@@ -36,7 +36,7 @@ public class UnitTest {
         when(shortenedUrlRepository.findByShortUrl(customShortUrl)).thenReturn(Optional.empty());
         when(shortenedUrlRepository.save(any(ShortenedUrl.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        String result = urlShortenerService.shortenUrl(originalUrl, customShortUrl);
+        String result = urlShortenerService.customUrl(originalUrl, customShortUrl);
 
         assertEquals("local/api/" + customShortUrl, result);
         verify(shortenedUrlRepository, times(1)).findByShortUrl(customShortUrl);
@@ -51,7 +51,7 @@ public class UnitTest {
         when(shortenedUrlRepository.findByShortUrl(customShortUrl)).thenReturn(Optional.of(new ShortenedUrl()));
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            urlShortenerService.shortenUrl(originalUrl, customShortUrl);
+            urlShortenerService.customUrl(originalUrl, customShortUrl);
         });
 
         assertEquals("Custom short URL is already in use.", exception.getMessage());
@@ -67,7 +67,7 @@ public class UnitTest {
         when(shortenedUrlRepository.findByShortUrl(anyString())).thenReturn(Optional.empty());
         when(shortenedUrlRepository.save(any(ShortenedUrl.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        String result = urlShortenerService.shortenUrl(originalUrl, null);
+        String result = urlShortenerService.shortenUrl(originalUrl);
 
         assertTrue(result.startsWith("local/"));
         verify(shortenedUrlRepository, atLeastOnce()).findByShortUrl(anyString());
