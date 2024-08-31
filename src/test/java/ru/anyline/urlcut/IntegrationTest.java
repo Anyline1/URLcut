@@ -30,7 +30,7 @@ public class IntegrationTest {
         String originalUrl = "https://www.google.com";
         String customShortUrl = "custom123";
 
-        mockMvc.perform(post("/api/shorten")
+        mockMvc.perform(post("/api/custom")
                         .param("url", originalUrl)
                         .param("customUrl", customShortUrl)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -38,23 +38,23 @@ public class IntegrationTest {
                 .andExpect(content().string("local/api/" + customShortUrl));
     }
 
-//    @Test
-//    public void testShortenUrl_CustomShortUrlAlreadyExists() throws Exception {
-//        String originalUrl = "https://www.google.com";
-//        String customShortUrl = "custom123";
-//
-//        ShortenedUrl shortenedUrl = new ShortenedUrl();
-//        shortenedUrl.setOriginalUrl(originalUrl);
-//        shortenedUrl.setShortUrl(customShortUrl);
-//        urlRepository.save(shortenedUrl);
-//
-//        mockMvc.perform(post("/api/shorten")
-//                        .param("url", originalUrl)
-//                        .param("customUrl", customShortUrl)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(content().string("Custom short URL is already in use."));
-//    }
+    @Test
+    public void testShortenUrl_CustomShortUrlAlreadyExists() throws Exception {
+        String originalUrl = "https://www.google.com";
+        String customShortUrl = "custom123";
+
+        ShortenedUrl shortenedUrl = new ShortenedUrl();
+        shortenedUrl.setOriginalUrl(originalUrl);
+        shortenedUrl.setShortUrl(customShortUrl);
+        urlRepository.save(shortenedUrl);
+
+        mockMvc.perform(post("/api/custom")
+                        .param("url", originalUrl)
+                        .param("customUrl", customShortUrl)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().string("Short URL already exists = local/api/custom123"));
+    }
 
     @Test
     public void testShortenUrl_InvalidUrl() throws Exception {

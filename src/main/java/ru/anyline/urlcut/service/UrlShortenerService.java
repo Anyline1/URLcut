@@ -23,7 +23,26 @@ public class UrlShortenerService {
     }
 
     @Cacheable(key = "#originalUrl", value = "shortenUrl")
-    public String shortenUrl(String originalUrl, String customShortUrl) {
+    public String shortenUrl(String originalUrl) {
+
+        Optional<ShortenedUrl> existingUrl = repository.findByOriginalUrl(originalUrl);
+        if (existingUrl.isPresent()) {
+            return "Short URL already exists = " + BASE_URL + existingUrl.get().getShortUrl();
+        }
+
+        String generatedShortUrl = generateShortUrl();
+        while (repository.findByShortUrl(generatedShortUrl).isPresent()) {
+            generatedShortUrl = generateShortUrl();
+        }
+
+        ShortenedUrl shortenedUrl = new ShortenedUrl();
+        shortenedUrl.setOriginalUrl(originalUrl);
+        shortenedUrl.setShortUrl(generatedShortUrl);
+        repository.save(shortenedUrl);
+        return BASE_URL + generatedShortUrl;
+    }
+
+    public String customUrl(String originalUrl, String customShortUrl) {
 
         Optional<ShortenedUrl> existingUrl = repository.findByOriginalUrl(originalUrl);
         if (existingUrl.isPresent()) {
@@ -43,19 +62,11 @@ public class UrlShortenerService {
             repository.save(shortenedUrl);
             return BASE_URL + customShortUrl;
         } else {
-
-            String generatedShortUrl = generateShortUrl();
-            while (repository.findByShortUrl(generatedShortUrl).isPresent()) {
-                generatedShortUrl = generateShortUrl();
-            }
-
-            ShortenedUrl shortenedUrl = new ShortenedUrl();
-            shortenedUrl.setOriginalUrl(originalUrl);
-            shortenedUrl.setShortUrl(generatedShortUrl);
-            repository.save(shortenedUrl);
-            return BASE_URL + generatedShortUrl;
+            throw new IllegalArgumentException("Custom short URL cannot be null or empty.");
         }
     }
+
+
 
     public String updateShortUrl(String originalUrl, String newShortUrl) {
         Optional<ShortenedUrl> existingUrl = repository.findByOriginalUrl(originalUrl);
