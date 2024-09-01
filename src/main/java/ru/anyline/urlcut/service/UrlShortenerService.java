@@ -15,14 +15,17 @@ public class UrlShortenerService {
 
     private final ShortenedUrlRepository repository;
 
+    private final UrlCacheService urlCacheService;
+
     private static final String BASE_URL = "local/api/";
 
     @Autowired
-    public UrlShortenerService(ShortenedUrlRepository repository) {
+    public UrlShortenerService(ShortenedUrlRepository repository, UrlCacheService urlCacheService) {
         this.repository = repository;
+        this.urlCacheService = urlCacheService;
     }
 
-    @Cacheable(key = "#originalUrl", value = "shortenUrl")
+//    @Cacheable(key = "#originalUrl", value = "shortenUrl")
     public String shortenUrl(String originalUrl) {
 
         Optional<ShortenedUrl> existingUrl = repository.findByOriginalUrl(originalUrl);
@@ -39,6 +42,7 @@ public class UrlShortenerService {
         shortenedUrl.setOriginalUrl(originalUrl);
         shortenedUrl.setShortUrl(generatedShortUrl);
         System.out.println(originalUrl + " " + shortenedUrl);
+        urlCacheService.updateUrlInCache(originalUrl, generatedShortUrl);
         repository.save(shortenedUrl);
         return BASE_URL + generatedShortUrl;
     }
@@ -60,6 +64,7 @@ public class UrlShortenerService {
             ShortenedUrl shortenedUrl = new ShortenedUrl();
             shortenedUrl.setOriginalUrl(originalUrl);
             shortenedUrl.setShortUrl(customShortUrl);
+            urlCacheService.updateUrlInCache(originalUrl, customShortUrl);
             repository.save(shortenedUrl);
             return BASE_URL + customShortUrl;
         } else {

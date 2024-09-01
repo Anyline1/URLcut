@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
+import org.springframework.data.redis.core.RedisTemplate;
 import ru.anyline.urlcut.model.ShortenedUrl;
 import ru.anyline.urlcut.service.UrlShortenerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,13 @@ public class UrlShortenerController {
 
     private final UrlShortenerService urlShortenerService;
 
+    private final RedisTemplate<String, String> redisTemplate;
+
     @Autowired
-    public UrlShortenerController(UrlShortenerService urlShortenerService){
+    public UrlShortenerController(UrlShortenerService urlShortenerService, RedisTemplate<String, String> redisTemplate){
 
         this.urlShortenerService = urlShortenerService;
+        this.redisTemplate = redisTemplate;
     }
 
     @PostMapping("/shorten")
@@ -37,9 +41,10 @@ public class UrlShortenerController {
     )
 
     public ResponseEntity<String> shortenUrl(
-            @RequestParam @Valid @NotBlank @URL(message = "Invalid URL format") String url
+            @RequestParam String url
     ) {
-        String shortUrl = urlShortenerService.shortenUrl(url);
+
+        String shortUrl = Boolean.TRUE.equals(redisTemplate.hasKey(url)) ? redisTemplate.opsForValue().get(url):urlShortenerService.shortenUrl(url);
         return ResponseEntity.status(HttpStatus.CREATED).body(shortUrl);
     }
 

@@ -18,6 +18,5 @@ public class ShortenedUrl {
     private String shortUrl;
     private String customUrl;
 
-
 }
 
