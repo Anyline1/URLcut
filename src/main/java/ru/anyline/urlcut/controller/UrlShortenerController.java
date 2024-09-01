@@ -35,6 +35,7 @@ public class UrlShortenerController {
             summary = "Создание короткого URL",
             description = "Создает короткий URL для указанного оригинального URL."
     )
+
     public ResponseEntity<String> shortenUrl(
             @RequestParam @Valid @NotBlank @URL(message = "Invalid URL format") String url
     ) {

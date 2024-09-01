@@ -38,6 +38,7 @@ public class UrlShortenerService {
         ShortenedUrl shortenedUrl = new ShortenedUrl();
         shortenedUrl.setOriginalUrl(originalUrl);
         shortenedUrl.setShortUrl(generatedShortUrl);
+        System.out.println(originalUrl + " " + shortenedUrl);
         repository.save(shortenedUrl);
         return BASE_URL + generatedShortUrl;
     }
