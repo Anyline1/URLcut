@@ -1,5 +1,6 @@
 package ru.anyline.urlcut.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -7,14 +8,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import ru.anyline.urlcut.model.ShortenedUrl;
 
+@AllArgsConstructor
 @Service
 public class UrlCacheService {
-    private final RedisTemplate<String, String> redisTemplate;
 
-    @Autowired
-    public UrlCacheService(RedisTemplate<String, String> redisTemplate){
-        this.redisTemplate = redisTemplate;
-    }
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Cacheable(value = "cachedUrl", key = "#url")
     public String getUrlFromCache(String url) {

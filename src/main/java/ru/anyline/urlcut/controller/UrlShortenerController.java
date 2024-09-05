@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.data.redis.core.RedisTemplate;
 import ru.anyline.urlcut.model.ShortenedUrl;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api")
 @Tag(
         name = "URL Shortener",
@@ -26,13 +28,6 @@ public class UrlShortenerController {
     private final UrlShortenerService urlShortenerService;
 
     private final RedisTemplate<String, String> redisTemplate;
-
-    @Autowired
-    public UrlShortenerController(UrlShortenerService urlShortenerService, RedisTemplate<String, String> redisTemplate){
-
-        this.urlShortenerService = urlShortenerService;
-        this.redisTemplate = redisTemplate;
-    }
 
     @PostMapping("/shorten")
     @Operation(
