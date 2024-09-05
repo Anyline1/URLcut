@@ -4,8 +4,8 @@ package ru.anyline.urlcut.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Entity
 @Data
+@Entity(name = "shortened_url")
 public class ShortenedUrl {
 
     @Id
