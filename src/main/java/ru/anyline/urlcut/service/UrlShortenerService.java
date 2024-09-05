@@ -60,6 +60,7 @@ public class UrlShortenerService {
             ShortenedUrl shortenedUrl = new ShortenedUrl();
             shortenedUrl.setOriginalUrl(originalUrl);
             shortenedUrl.setShortUrl(customShortUrl);
+            shortenedUrl.setCustomUrl((customShortUrl));
             urlCacheService.updateUrlInCache(originalUrl, customShortUrl);
             repository.save(shortenedUrl);
             return BASE_URL + customShortUrl;

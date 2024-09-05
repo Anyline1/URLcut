@@ -36,7 +36,7 @@ public class UrlShortenerController {
     )
 
     public ResponseEntity<String> shortenUrl(
-            @RequestParam String url
+            @RequestParam @Valid @NotBlank @URL(message = "Invalid URL format") String url
     ) {
 
         String shortUrl = Boolean.TRUE.equals(redisTemplate.hasKey(url)) ? redisTemplate.opsForValue().get(url):urlShortenerService.shortenUrl(url);
