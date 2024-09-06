@@ -2,12 +2,12 @@ package ru.anyline.urlcut;
 
 import ru.anyline.urlcut.model.ShortenedUrl;
 import ru.anyline.urlcut.repository.ShortenedUrlRepository;
-import ru.anyline.urlcut.service.UrlShortenerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import ru.anyline.urlcut.service.UrlShortenerServiceImpl;
 
 import java.util.Optional;
 
@@ -21,7 +21,7 @@ public class UnitTest {
     private ShortenedUrlRepository shortenedUrlRepository;
 
     @InjectMocks
-    private UrlShortenerService urlShortenerService;
+    private UrlShortenerServiceImpl urlShortenerService;
 
     @BeforeEach
     public void setUp() {

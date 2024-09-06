@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import ru.anyline.urlcut.service.UrlShortenerService;
+import ru.anyline.urlcut.service.UrlShortenerServiceImpl;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,7 +18,7 @@ public class MockTest {
 
 
     @Mock
-    private UrlShortenerService urlShortenerService;
+    private UrlShortenerServiceImpl urlShortenerService;
     @InjectMocks
     private UrlShortenerController urlShortenerController;
 

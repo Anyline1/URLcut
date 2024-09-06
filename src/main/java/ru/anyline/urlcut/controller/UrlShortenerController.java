@@ -6,13 +6,11 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import org.hibernate.validator.constraints.URL;
-import org.springframework.data.redis.core.RedisTemplate;
 import ru.anyline.urlcut.model.ShortenedUrl;
-import ru.anyline.urlcut.service.UrlShortenerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.anyline.urlcut.service.UrlShortenerServiceImpl;
 
 import java.util.List;
 
@@ -25,9 +23,7 @@ import java.util.List;
 )
 public class UrlShortenerController {
 
-    private final UrlShortenerService urlShortenerService;
-
-    private final RedisTemplate<String, String> redisTemplate;
+    private final UrlShortenerServiceImpl urlShortenerService;
 
     @PostMapping("/shorten")
     @Operation(
@@ -39,7 +35,7 @@ public class UrlShortenerController {
             @RequestParam @Valid @NotBlank @URL(message = "Invalid URL format") String url
     ) {
 
-        String shortUrl = Boolean.TRUE.equals(redisTemplate.hasKey(url)) ? redisTemplate.opsForValue().get(url):urlShortenerService.shortenUrl(url);
+        String shortUrl = urlShortenerService.isUrlInCache(url) ? urlShortenerService.getUrlFromCache(url):urlShortenerService.shortenUrl(url);
         return ResponseEntity.status(HttpStatus.CREATED).body(shortUrl);
     }
 
