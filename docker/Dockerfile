@@ -2,7 +2,7 @@ FROM openjdk:17
 
 WORKDIR /docker
 
-COPY URLcut.jar app.jar
+COPY UrlCut.jar app.jar
 
 EXPOSE 8080
 

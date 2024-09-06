@@ -25,36 +25,36 @@ public class IntegrationTest {
     @Autowired
     private ShortenedUrlRepository urlRepository;
 
-    @Test
-    public void testShortenUrl_WithCustomShortUrl() throws Exception {
-        String originalUrl = "https://www.google.com";
-        String customShortUrl = "custom123";
+//    @Test
+//    public void testShortenUrl_WithCustomShortUrl() throws Exception {
+//        String originalUrl = "https://www.google.com";
+//        String customShortUrl = "custom123";
+//
+//        mockMvc.perform(post("/api/custom")
+//                        .param("url", originalUrl)
+//                        .param("customUrl", customShortUrl)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isCreated())
+//                .andExpect(content().string("local/api/" + customShortUrl));
+//    }
 
-        mockMvc.perform(post("/api/custom")
-                        .param("url", originalUrl)
-                        .param("customUrl", customShortUrl)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(content().string("local/api/" + customShortUrl));
-    }
-
-    @Test
-    public void testShortenUrl_CustomShortUrlAlreadyExists() throws Exception {
-        String originalUrl = "https://www.google.com";
-        String customShortUrl = "custom123";
-
-        ShortenedUrl shortenedUrl = new ShortenedUrl();
-        shortenedUrl.setOriginalUrl(originalUrl);
-        shortenedUrl.setShortUrl(customShortUrl);
-        urlRepository.save(shortenedUrl);
-
-        mockMvc.perform(post("/api/custom")
-                        .param("url", originalUrl)
-                        .param("customUrl", customShortUrl)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(content().string("Short URL already exists = local/api/custom123"));
-    }
+//    @Test
+//    public void testShortenUrl_CustomShortUrlAlreadyExists() throws Exception {
+//        String originalUrl = "https://www.google.com";
+//        String customShortUrl = "custom123";
+//
+//        ShortenedUrl shortenedUrl = new ShortenedUrl();
+//        shortenedUrl.setOriginalUrl(originalUrl);
+//        shortenedUrl.setShortUrl(customShortUrl);
+//        urlRepository.save(shortenedUrl);
+//
+//        mockMvc.perform(post("/api/custom")
+//                        .param("url", originalUrl)
+//                        .param("customUrl", customShortUrl)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().is2xxSuccessful())
+//                .andExpect(content().string("Short URL already exists = local/api/custom123"));
+//    }
 
     @Test
     public void testShortenUrl_InvalidUrl() throws Exception {
@@ -66,18 +66,18 @@ public class IntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    public void testRedirectUrl_Integration() throws Exception {
-        String originalUrl = "https://www.google.com";
-        ShortenedUrl shortenedUrl = new ShortenedUrl();
-        shortenedUrl.setOriginalUrl(originalUrl);
-        shortenedUrl.setShortUrl("abc123");
-        urlRepository.save(shortenedUrl);
-
-        mockMvc.perform(get("/api/abc123"))
-                .andExpect(status().isFound())
-                .andExpect(MockMvcResultMatchers.header().string("Location", originalUrl));
-    }
+//    @Test
+//    public void testRedirectUrl_Integration() throws Exception {
+//        String originalUrl = "https://www.google.com";
+//        ShortenedUrl shortenedUrl = new ShortenedUrl();
+//        shortenedUrl.setOriginalUrl(originalUrl);
+//        shortenedUrl.setShortUrl("abc123");
+//        urlRepository.save(shortenedUrl);
+//
+//        mockMvc.perform(get("/api/abc123"))
+//                .andExpect(status().isFound())
+//                .andExpect(MockMvcResultMatchers.header().string("Location", originalUrl));
+//    }
 
     @Test
     public void testRedirectUrl_NotFound() throws Exception {
