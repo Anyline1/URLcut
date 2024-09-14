@@ -1,5 +1,6 @@
 package ru.anyline.urlcut.service;
 
+import lombok.AllArgsConstructor;
 import ru.anyline.urlcut.model.ShortenedUrl;
 import ru.anyline.urlcut.repository.ShortenedUrlRepository;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
+@AllArgsConstructor
 public class UrlShortenerServiceImpl implements UrlShortenerService{
 
     private final ShortenedUrlRepository repository;
@@ -16,11 +18,6 @@ public class UrlShortenerServiceImpl implements UrlShortenerService{
     private final UrlCacheServiceImpl urlCacheServiceImpl;
 
     private static final String BASE_URL = "local/api/";
-
-    public UrlShortenerServiceImpl(ShortenedUrlRepository repository, UrlCacheServiceImpl urlCacheServiceImpl) {
-        this.repository = repository;
-        this.urlCacheServiceImpl = urlCacheServiceImpl;
-    }
 
 //    @Cacheable(key = "#originalUrl", value = "shortenUrl")
     @Override
