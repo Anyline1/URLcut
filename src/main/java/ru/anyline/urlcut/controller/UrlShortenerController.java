@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.data.redis.core.RedisTemplate;
 import ru.anyline.urlcut.model.ShortenedUrl;
+import ru.anyline.urlcut.service.UrlCacheService;
 import ru.anyline.urlcut.service.UrlShortenerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,13 +26,14 @@ public class UrlShortenerController {
 
     private final UrlShortenerService urlShortenerService;
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final UrlCacheService urlCacheService;
 
     @Autowired
-    public UrlShortenerController(UrlShortenerService urlShortenerService, RedisTemplate<String, String> redisTemplate){
+    public UrlShortenerController(UrlShortenerService urlShortenerService,
+                                  UrlCacheService urlCacheService){
 
         this.urlShortenerService = urlShortenerService;
-        this.redisTemplate = redisTemplate;
+        this.urlCacheService = urlCacheService;
     }
 
     @PostMapping("/shorten")
@@ -39,12 +41,11 @@ public class UrlShortenerController {
             summary = "Создание короткого URL",
             description = "Создает короткий URL для указанного оригинального URL."
     )
-
     public ResponseEntity<String> shortenUrl(
             @RequestParam String url
     ) {
 
-        String shortUrl = Boolean.TRUE.equals(redisTemplate.hasKey(url)) ? redisTemplate.opsForValue().get(url):urlShortenerService.shortenUrl(url);
+        String shortUrl = Boolean.TRUE.equals(urlCacheService.hasKey(url)) ? urlCacheService.getUrlFromCache(url):urlShortenerService.shortenUrl(url);
         return ResponseEntity.status(HttpStatus.CREATED).body(shortUrl);
     }
 

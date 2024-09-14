@@ -27,4 +27,9 @@ public class UrlCacheService {
 
         redisTemplate.opsForValue().set(url, shortenedUrl);
     }
+
+    public boolean hasKey(String url){
+
+        return Boolean.TRUE.equals(redisTemplate.hasKey(url));
+    }
 }
