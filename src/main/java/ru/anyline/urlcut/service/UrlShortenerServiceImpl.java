@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
-public class UrlShortenerServiceImpl {
+public class UrlShortenerServiceImpl implements UrlShortenerService{
 
     private final ShortenedUrlRepository repository;
 
@@ -23,6 +23,7 @@ public class UrlShortenerServiceImpl {
     }
 
 //    @Cacheable(key = "#originalUrl", value = "shortenUrl")
+    @Override
     public String shortenUrl(String originalUrl) {
 
         Optional<ShortenedUrl> existingUrl = repository.findByOriginalUrl(originalUrl);
@@ -44,6 +45,7 @@ public class UrlShortenerServiceImpl {
         return BASE_URL + generatedShortUrl;
     }
 
+    @Override
     public String customUrl(String originalUrl, String customShortUrl) {
 
         Optional<ShortenedUrl> existingUrl = repository.findByOriginalUrl(originalUrl);
@@ -70,7 +72,7 @@ public class UrlShortenerServiceImpl {
     }
 
 
-
+    @Override
     public String updateShortUrl(String originalUrl, String newShortUrl) {
         Optional<ShortenedUrl> existingUrl = repository.findByOriginalUrl(originalUrl);
 
@@ -93,6 +95,7 @@ public class UrlShortenerServiceImpl {
         }
     }
 
+    @Override
     public String getOriginalUrl(String shortUrl) {
         Optional<ShortenedUrl> shortenedUrl = repository.findByShortUrl(shortUrl);
         return shortenedUrl.map(ShortenedUrl::getOriginalUrl).orElse(null);
