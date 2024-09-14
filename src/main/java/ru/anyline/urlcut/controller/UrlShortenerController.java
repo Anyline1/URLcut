@@ -4,18 +4,18 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import org.hibernate.validator.constraints.URL;
 import ru.anyline.urlcut.model.ShortenedUrl;
+import ru.anyline.urlcut.service.UrlCacheServiceImpl;
+import ru.anyline.urlcut.service.UrlShortenerServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.anyline.urlcut.service.UrlShortenerServiceImpl;
 
 import java.util.List;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping("/api")
 @Tag(
         name = "URL Shortener",
@@ -23,19 +23,28 @@ import java.util.List;
 )
 public class UrlShortenerController {
 
-    private final UrlShortenerServiceImpl urlShortenerService;
+    private final UrlShortenerServiceImpl urlShortenerServiceImpl;
+
+    private final UrlCacheServiceImpl urlCacheServiceImpl;
+
+    @Autowired
+    public UrlShortenerController(UrlShortenerServiceImpl urlShortenerServiceImpl,
+                                  UrlCacheServiceImpl urlCacheServiceImpl){
+
+        this.urlShortenerServiceImpl = urlShortenerServiceImpl;
+        this.urlCacheServiceImpl = urlCacheServiceImpl;
+    }
 
     @PostMapping("/shorten")
     @Operation(
             summary = "Создание короткого URL",
             description = "Создает короткий URL для указанного оригинального URL."
     )
-
     public ResponseEntity<String> shortenUrl(
-            @RequestParam @Valid @NotBlank @URL(message = "Invalid URL format") String url
+            @RequestParam String url
     ) {
 
-        String shortUrl = urlShortenerService.isUrlInCache(url) ? urlShortenerService.getUrlFromCache(url):urlShortenerService.shortenUrl(url);
+        String shortUrl = Boolean.TRUE.equals(urlCacheServiceImpl.hasKey(url)) ? urlCacheServiceImpl.getUrlFromCache(url): urlShortenerServiceImpl.shortenUrl(url);
         return ResponseEntity.status(HttpStatus.CREATED).body(shortUrl);
     }
 
@@ -48,7 +57,7 @@ public class UrlShortenerController {
             @RequestParam @Valid @NotBlank @URL(message = "Invalid URL format") String url,
             @RequestParam(value = "customUrl") String customUrl
     ) {
-        String shortUrl = urlShortenerService.customUrl(url, customUrl);
+        String shortUrl = urlShortenerServiceImpl.customUrl(url, customUrl);
         return ResponseEntity.status(HttpStatus.CREATED).body(shortUrl);
     }
 
@@ -58,7 +67,7 @@ public class UrlShortenerController {
             description = "Перенаправляет на оригинальный URL, связанный с указанным коротким URL."
     )
     public ResponseEntity<Void> redirectUrl(@PathVariable String shortUrl) {
-        String originalUrl = urlShortenerService.getOriginalUrl(shortUrl);
+        String originalUrl = urlShortenerServiceImpl.getOriginalUrl(shortUrl);
         if (originalUrl != null) {
             return ResponseEntity.status(HttpStatus.FOUND)
                     .header("Location", originalUrl)
@@ -76,7 +85,7 @@ public class UrlShortenerController {
                                                  @RequestParam String newShortUrl
     ) {
         try {
-            String updatedShortUrl = urlShortenerService.updateShortUrl(originalUrl, newShortUrl);
+            String updatedShortUrl = urlShortenerServiceImpl.updateShortUrl(originalUrl, newShortUrl);
             return new ResponseEntity<>(updatedShortUrl, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -89,7 +98,7 @@ public class UrlShortenerController {
             description = "Возвращает все существующие короткие URL, с привязкой к основным URL."
     )
     public List<ShortenedUrl> getAllRepos(){
-        return urlShortenerService.getAllRepos();
+        return urlShortenerServiceImpl.getAllRepos();
     }
 }
 

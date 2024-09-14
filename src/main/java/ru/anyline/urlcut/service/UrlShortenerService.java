@@ -6,10 +6,9 @@ import java.util.List;
 
 public interface UrlShortenerService {
 
-    public String shortenUrl(String str);
-    public String customUrl(String original, String customShortUrl);
-    public String updateShortUrl(String original, String newShortUrl);
-    public String getOriginalUrl(String shortUrl);
-    public List<ShortenedUrl> getAllRepos();
+    String shortenUrl(String originalUrl);
+    String customUrl(String originalUrl, String customShortUrl);
+    String updateShortUrl(String originalUrl, String newShortUrl);
+    String getOriginalUrl(String shortUrl);
 
 }

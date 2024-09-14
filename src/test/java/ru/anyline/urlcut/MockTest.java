@@ -18,7 +18,7 @@ public class MockTest {
 
 
     @Mock
-    private UrlShortenerServiceImpl urlShortenerService;
+    private UrlShortenerServiceImpl urlShortenerServiceImpl;
     @InjectMocks
     private UrlShortenerController urlShortenerController;
 
@@ -32,14 +32,14 @@ public class MockTest {
         String originalUrl = "https://www.google.com";
         String existingShortUrl = "abc123";
 
-        when(urlShortenerService.shortenUrl(originalUrl))
+        when(urlShortenerServiceImpl.shortenUrl(originalUrl))
                 .thenReturn("local/api/" + existingShortUrl);
 
         ResponseEntity<String> response = urlShortenerController.shortenUrl(originalUrl);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("local/api/" + existingShortUrl, response.getBody());
-        verify(urlShortenerService, times(1)).shortenUrl(originalUrl);
+        verify(urlShortenerServiceImpl, times(1)).shortenUrl(originalUrl);
     }
 
     @Test
@@ -47,14 +47,14 @@ public class MockTest {
         String originalUrl = "https://www.google.com";
         String customShortUrl = "custom123";
 
-        when(urlShortenerService.customUrl(originalUrl, customShortUrl))
+        when(urlShortenerServiceImpl.customUrl(originalUrl, customShortUrl))
                 .thenReturn("local/api/" + customShortUrl);
 
         ResponseEntity<String> response = urlShortenerController.customUrl(originalUrl, customShortUrl);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("local/api/" + customShortUrl, response.getBody());
-        verify(urlShortenerService, times(1)).customUrl(originalUrl, customShortUrl);
+        verify(urlShortenerServiceImpl, times(1)).customUrl(originalUrl, customShortUrl);
     }
 
     @Test
@@ -62,14 +62,14 @@ public class MockTest {
         String originalUrl = "https://www.google.com";
         String generatedShortUrl = "abc123";
 
-        when(urlShortenerService.shortenUrl(originalUrl))
+        when(urlShortenerServiceImpl.shortenUrl(originalUrl))
                 .thenReturn("local/api/" + generatedShortUrl);
 
         ResponseEntity<String> response = urlShortenerController.shortenUrl(originalUrl);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("local/api/" + generatedShortUrl, response.getBody());
-        verify(urlShortenerService, times(1)).shortenUrl(originalUrl);
+        verify(urlShortenerServiceImpl, times(1)).shortenUrl(originalUrl);
     }
 
 

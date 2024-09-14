@@ -1,9 +1,5 @@
 package ru.anyline.urlcut.service;
 
-import lombok.AllArgsConstructor;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
 import ru.anyline.urlcut.model.ShortenedUrl;
 import ru.anyline.urlcut.repository.ShortenedUrlRepository;
 import org.springframework.stereotype.Service;
@@ -12,14 +8,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-@AllArgsConstructor
 @Service
-public class UrlShortenerServiceImpl implements UrlShortenerService {
+public class UrlShortenerServiceImpl implements UrlShortenerService{
 
     private final ShortenedUrlRepository repository;
-    private final RedisTemplate<String, String> redisTemplate;
+
+    private final UrlCacheServiceImpl urlCacheServiceImpl;
+
     private static final String BASE_URL = "local/api/";
 
+    public UrlShortenerServiceImpl(ShortenedUrlRepository repository, UrlCacheServiceImpl urlCacheServiceImpl) {
+        this.repository = repository;
+        this.urlCacheServiceImpl = urlCacheServiceImpl;
+    }
+
+//    @Cacheable(key = "#originalUrl", value = "shortenUrl")
     @Override
     public String shortenUrl(String originalUrl) {
 
@@ -37,7 +40,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
         shortenedUrl.setOriginalUrl(originalUrl);
         shortenedUrl.setShortUrl(generatedShortUrl);
         System.out.println(originalUrl + " " + shortenedUrl);
-        updateUrlInCache(originalUrl, generatedShortUrl);
+        urlCacheServiceImpl.updateUrlInCache(originalUrl, generatedShortUrl);
         repository.save(shortenedUrl);
         return BASE_URL + generatedShortUrl;
     }
@@ -60,8 +63,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
             ShortenedUrl shortenedUrl = new ShortenedUrl();
             shortenedUrl.setOriginalUrl(originalUrl);
             shortenedUrl.setShortUrl(customShortUrl);
-            shortenedUrl.setCustomUrl((customShortUrl));
-            updateUrlInCache(originalUrl, customShortUrl);
+            urlCacheServiceImpl.updateUrlInCache(originalUrl, customShortUrl);
             repository.save(shortenedUrl);
             return BASE_URL + customShortUrl;
         } else {
@@ -70,7 +72,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     }
 
 
-
+    @Override
     public String updateShortUrl(String originalUrl, String newShortUrl) {
         Optional<ShortenedUrl> existingUrl = repository.findByOriginalUrl(originalUrl);
 
@@ -93,6 +95,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
         }
     }
 
+    @Override
     public String getOriginalUrl(String shortUrl) {
         Optional<ShortenedUrl> shortenedUrl = repository.findByShortUrl(shortUrl);
         return shortenedUrl.map(ShortenedUrl::getOriginalUrl).orElse(null);
@@ -111,23 +114,5 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
         }
         return shortUrl.toString();
     }
-
-    @Cacheable(value = "cachedUrl", key = "#url")
-    public String getUrlFromCache(String url) {
-
-        return redisTemplate.opsForValue().get(url);
-    }
-
-    @CachePut(value = "cachedUrl", key = "#url")
-    public void updateUrlInCache(String url, String shortenedUrl) {
-
-        redisTemplate.opsForValue().set(url, shortenedUrl);
-    }
-
-    public boolean isUrlInCache(String url) {
-
-        return Boolean.TRUE.equals(redisTemplate.hasKey(url));
-    }
-
 }
 

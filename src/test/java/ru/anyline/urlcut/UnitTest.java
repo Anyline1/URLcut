@@ -2,12 +2,12 @@ package ru.anyline.urlcut;
 
 import ru.anyline.urlcut.model.ShortenedUrl;
 import ru.anyline.urlcut.repository.ShortenedUrlRepository;
+import ru.anyline.urlcut.service.UrlShortenerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import ru.anyline.urlcut.service.UrlShortenerServiceImpl;
 
 import java.util.Optional;
 
@@ -21,27 +21,27 @@ public class UnitTest {
     private ShortenedUrlRepository shortenedUrlRepository;
 
     @InjectMocks
-    private UrlShortenerServiceImpl urlShortenerService;
+    private UrlShortenerServiceImpl urlShortenerServiceImpl;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
-//    @Test
-//    public void testShortenUrl_WithCustomShortUrl_Success() {
-//        String originalUrl = "https://www.google.com";
-//        String customShortUrl = "abc123";
-//
-//        when(shortenedUrlRepository.findByShortUrl(customShortUrl)).thenReturn(Optional.empty());
-//        when(shortenedUrlRepository.save(any(ShortenedUrl.class))).thenAnswer(invocation -> invocation.getArgument(0));
-//
-//        String result = urlShortenerService.customUrl(originalUrl, customShortUrl);
-//
-//        assertEquals("local/api/" + customShortUrl, result);
-//        verify(shortenedUrlRepository, times(1)).findByShortUrl(customShortUrl);
-//        verify(shortenedUrlRepository, times(1)).save(any(ShortenedUrl.class));
-//    }
+    @Test
+    public void testShortenUrl_WithCustomShortUrl_Success() {
+        String originalUrl = "https://www.google.com";
+        String customShortUrl = "abc123";
+
+        when(shortenedUrlRepository.findByShortUrl(customShortUrl)).thenReturn(Optional.empty());
+        when(shortenedUrlRepository.save(any(ShortenedUrl.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        String result = urlShortenerServiceImpl.customUrl(originalUrl, customShortUrl);
+
+        assertEquals("local/api/" + customShortUrl, result);
+        verify(shortenedUrlRepository, times(1)).findByShortUrl(customShortUrl);
+        verify(shortenedUrlRepository, times(1)).save(any(ShortenedUrl.class));
+    }
 
     @Test
     public void testShortenUrl_WithCustomShortUrl_AlreadyExists() {
@@ -51,7 +51,7 @@ public class UnitTest {
         when(shortenedUrlRepository.findByShortUrl(customShortUrl)).thenReturn(Optional.of(new ShortenedUrl()));
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            urlShortenerService.customUrl(originalUrl, customShortUrl);
+            urlShortenerServiceImpl.customUrl(originalUrl, customShortUrl);
         });
 
         assertEquals("Custom short URL is already in use.", exception.getMessage());
@@ -59,20 +59,20 @@ public class UnitTest {
         verify(shortenedUrlRepository, times(0)).save(any(ShortenedUrl.class));
     }
 
-//    @Test
-//    public void testShortenUrl_WithRandomShortUrl_Success() {
-//        String originalUrl = "https://www.google.com";
-//        String generatedShortUrl = "abc123";
-//
-//        when(shortenedUrlRepository.findByShortUrl(anyString())).thenReturn(Optional.empty());
-//        when(shortenedUrlRepository.save(any(ShortenedUrl.class))).thenAnswer(invocation -> invocation.getArgument(0));
-//
-//        String result = urlShortenerService.shortenUrl(originalUrl);
-//
-//        assertTrue(result.startsWith("local/"));
-//        verify(shortenedUrlRepository, atLeastOnce()).findByShortUrl(anyString());
-//        verify(shortenedUrlRepository, times(1)).save(any(ShortenedUrl.class));
-//    }
+    @Test
+    public void testShortenUrl_WithRandomShortUrl_Success() {
+        String originalUrl = "https://www.google.com";
+        String generatedShortUrl = "abc123";
+
+        when(shortenedUrlRepository.findByShortUrl(anyString())).thenReturn(Optional.empty());
+        when(shortenedUrlRepository.save(any(ShortenedUrl.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        String result = urlShortenerServiceImpl.shortenUrl(originalUrl);
+
+        assertTrue(result.startsWith("local/"));
+        verify(shortenedUrlRepository, atLeastOnce()).findByShortUrl(anyString());
+        verify(shortenedUrlRepository, times(1)).save(any(ShortenedUrl.class));
+    }
 
     @Test
     public void testGetOriginalUrl_ValidShortUrl() {
@@ -83,7 +83,7 @@ public class UnitTest {
 
         when(shortenedUrlRepository.findByShortUrl(shortUrl)).thenReturn(Optional.of(shortenedUrl));
 
-        String originalUrl = urlShortenerService.getOriginalUrl(shortUrl);
+        String originalUrl = urlShortenerServiceImpl.getOriginalUrl(shortUrl);
         assertEquals("https://www.google.com", originalUrl);
 
         verify(shortenedUrlRepository, times(1)).findByShortUrl(shortUrl);
@@ -95,7 +95,7 @@ public class UnitTest {
 
         when(shortenedUrlRepository.findByShortUrl(shortUrl)).thenReturn(Optional.empty());
 
-        String originalUrl = urlShortenerService.getOriginalUrl(shortUrl);
+        String originalUrl = urlShortenerServiceImpl.getOriginalUrl(shortUrl);
         assertNull(originalUrl);
 
         verify(shortenedUrlRepository, times(1)).findByShortUrl(shortUrl);
