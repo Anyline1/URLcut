@@ -1,8 +1,5 @@
 package ru.anyline.urlcut.service;
 
-import ru.anyline.urlcut.model.ShortenedUrl;
-
-import java.util.List;
 
 public interface UrlShortenerService {
 

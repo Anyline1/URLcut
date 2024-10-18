@@ -9,7 +9,6 @@ import org.hibernate.validator.constraints.URL;
 import ru.anyline.urlcut.model.ShortenedUrl;
 import ru.anyline.urlcut.service.UrlCacheServiceImpl;
 import ru.anyline.urlcut.service.UrlShortenerServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

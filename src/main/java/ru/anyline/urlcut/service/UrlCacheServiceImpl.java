@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class UrlCacheServiceImpl implements UrlCacheService{
+
     private final RedisTemplate<String, String> redisTemplate;
 
     @Cacheable(value = "cachedUrl", key = "#url")
