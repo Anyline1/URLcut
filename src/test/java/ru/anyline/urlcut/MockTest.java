@@ -101,7 +101,20 @@ public class MockTest {
         verify(urlShortenerServiceImpl, times(1)).getAllRepos();
     }
 
+    @Test
+    public void testGetAllRepos_WithSpecialCharactersInShortUrl_ReturnsAllRepos() {
+        String originalUrl = "https://www.google.com/special/characters";
+        String shortUrl = "local/api/spec!al#char";
+        ShortenedUrl shortenedUrl = new ShortenedUrl(1L, originalUrl, shortUrl, "http://localhost");
 
+        when(urlShortenerServiceImpl.getAllRepos())
+                .thenReturn(Collections.singletonList(shortenedUrl));
+
+        List<ShortenedUrl> result = urlShortenerController.getAllRepos();
+
+        assertEquals(Collections.singletonList(shortenedUrl), result);
+        verify(urlShortenerServiceImpl, times(1)).getAllRepos();
+    }
 
 }
 
