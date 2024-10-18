@@ -19,7 +19,6 @@ public class UrlShortenerServiceImpl implements UrlShortenerService{
 
     private static final String BASE_URL = "local/api/";
 
-//    @Cacheable(key = "#originalUrl", value = "shortenUrl")
     @Override
     public String shortenUrl(String originalUrl) {
 
