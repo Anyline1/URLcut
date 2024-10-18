@@ -8,8 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import ru.anyline.urlcut.model.ShortenedUrl;
 import ru.anyline.urlcut.service.UrlShortenerServiceImpl;
 
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -70,6 +74,16 @@ public class MockTest {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("local/api/" + generatedShortUrl, response.getBody());
         verify(urlShortenerServiceImpl, times(1)).shortenUrl(originalUrl);
+    }
+
+    @Test
+    public void testGetAllRepos_WithNoShortUrls_ReturnsEmptyList() {
+        when(urlShortenerServiceImpl.getAllRepos()).thenReturn(Collections.emptyList());
+
+        List<ShortenedUrl> result = urlShortenerController.getAllRepos();
+
+        assertEquals(Collections.emptyList(), result);
+        verify(urlShortenerServiceImpl, times(1)).getAllRepos();
     }
 
 
